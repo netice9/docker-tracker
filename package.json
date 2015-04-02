@@ -1,0 +1,34 @@
+{
+  "name": "docker-tracker",
+  "version": "0.0.0",
+  "description": "Tracks Docker Repository events and builds in-memory object model of the current state",
+  "homepage": "https://github.com/netice9/docker-tracker",
+  "author": {
+    "name": "Dragan Milic",
+    "email": "dragan@netice9.com"
+  },
+  "repository": "draganm/docker-tracker",
+  "license": "MIT",
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "docker-tracker",
+    "docker",
+    "node"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-nodeunit": "^0.4.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "load-grunt-tasks": "^1.0.0",
+    "time-grunt": "^1.0.0",
+    "grunt-mocha-cli": "^1.11.0",
+    "jshint-stylish": "^1.0.0"
+  },
+  "scripts": {
+    "test": "grunt"
+  }
+}
