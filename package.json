@@ -1,6 +1,6 @@
 {
   "name": "docker-tracker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tracks Docker Repository events and builds in-memory object model of the current state",
   "homepage": "https://github.com/netice9/docker-tracker",
   "author": {

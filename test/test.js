@@ -42,8 +42,18 @@ describe('docker-tracker node module', function () {
       docker.run('ubuntu', ['bash', '-c', 'uname -a'], devNull(), done);
     });
 
+    this.beforeEach(function(done) {
+      setTimeout(done,400);
+    });
+
     it ('has one container in the model', function() {
       assert.equal(Object.keys(this.tracker.containers).length, 1);
+    });
+
+    it ('keeps complete container information', function() {
+      var firstKey = Object.keys(this.tracker.containers)[0];
+      var firstValue = this.tracker.containers[firstKey];
+      assert.notEqual(firstValue.State, null);
     });
 
     describe('when the container is deleted', function() {
@@ -51,11 +61,13 @@ describe('docker-tracker node module', function () {
         var container = docker.getContainer(Object.keys(this.tracker.containers)[0]);
         container.remove({force: true}, done);
       });
+
       this.beforeEach(function(done) {
         setTimeout(done,400);
       });
+
       it('has not containers in the model', function() {
-        assert.deepEqual(this.tracker.containers, []);
+        assert.deepEqual(this.tracker.containers, {});
       });
     });
 

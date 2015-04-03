@@ -12,7 +12,9 @@ function DockerTracker(docker) {
   });
 
   this.emitter.on('create', function(msg) {
-    that.containers[msg.id] = docker.getContainer(msg.id);
+    docker.getContainer(msg.id).inspect(function(err, containerData) {
+      that.containers[msg.id] = containerData;
+    });
   });
 
   this.emitter.on('destroy', function(msg) {
@@ -25,9 +27,10 @@ function DockerTracker(docker) {
     }
 
     that.emitter.start();
-
     containers.forEach(function(containerInfo) {
-      that.containers[containerInfo.Id] = docker.getContainer(containerInfo.Id);
+      docker.getContainer(containerInfo.Id).inspect(function(err, containerData) {
+        that.containers[containerInfo.Id] = containerData;
+      });
     });
 
   });
