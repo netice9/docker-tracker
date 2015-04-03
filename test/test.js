@@ -66,7 +66,7 @@ describe('docker-tracker node module', function () {
         setTimeout(done,400);
       });
 
-      it('has not containers in the model', function() {
+      it('has no containers in the model', function() {
         assert.deepEqual(this.tracker.containers, {});
       });
     });
