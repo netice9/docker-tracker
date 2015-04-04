@@ -5,7 +5,7 @@ var dockerTracker = require('../');
 var async = require('async');
 var Docker = require('dockerode');
 var docker = new Docker();
-var devNull = require('dev-null');
+// var devNull = require('dev-null');
 
 describe('docker-tracker node module', function () {
 
@@ -39,7 +39,19 @@ describe('docker-tracker node module', function () {
   describe('when there is one container running', function() {
 
     this.beforeEach(function(done) {
-      docker.run('ubuntu', ['bash', '-c', 'uname -a'], devNull(), done);
+
+      docker.createContainer({
+        Cmd: ['sleep', '500'],
+        Image: 'ubuntu',
+        OpenStdin: false,
+        Tty: false
+      }, function(err, container) {
+        if (err) {
+          return done(err);
+        }
+        container.start(done);
+      });
+
     });
 
     this.beforeEach(function(done) {
@@ -54,6 +66,26 @@ describe('docker-tracker node module', function () {
       var firstKey = Object.keys(this.tracker.containers)[0];
       var firstValue = this.tracker.containers[firstKey];
       assert.notEqual(firstValue.State, null);
+    });
+
+
+    describe('when container is stopped', function() {
+
+      this.beforeEach(function(done) {
+        var container = docker.getContainer(Object.keys(this.tracker.containers)[0]);
+        container.stop({}, done);
+      });
+
+      this.beforeEach(function(done) {
+        setTimeout(done,600);
+      });
+
+      it ("container's state should be updated", function() {
+        var firstKey = Object.keys(this.tracker.containers)[0];
+        var firstValue = this.tracker.containers[firstKey];
+        assert.equal(firstValue.State.Running, false);
+      });
+
     });
 
     describe('when the container is deleted', function() {
@@ -72,7 +104,5 @@ describe('docker-tracker node module', function () {
     });
 
   });
-
-
 
 });

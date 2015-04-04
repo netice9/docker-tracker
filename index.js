@@ -11,9 +11,13 @@ function DockerTracker(docker) {
     docker: docker
   });
 
-  this.emitter.on('create', function(msg) {
-    docker.getContainer(msg.id).inspect(function(err, containerData) {
-      that.containers[msg.id] = containerData;
+  // TODO: die?
+
+  ['create', 'start', 'stop'].forEach(function(eventName) {
+    that.emitter.on(eventName, function(msg) {
+      docker.getContainer(msg.id).inspect(function(err, containerData) {
+        that.containers[msg.id] = containerData;
+      });
     });
   });
 
