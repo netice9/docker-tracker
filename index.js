@@ -2,6 +2,9 @@
 
 var DockerEvents = require('docker-events');
 
+var events = require('events');
+var util = require('util');
+
 function DockerTracker(docker) {
   var that = this;
   this.containers = {};
@@ -17,11 +20,13 @@ function DockerTracker(docker) {
     that.emitter.on(eventName, function(msg) {
       docker.getContainer(msg.id).inspect(function(err, containerData) {
         that.containers[msg.id] = containerData;
+        that.emit(eventName, msg.id);
       });
     });
   });
 
   this.emitter.on('destroy', function(msg) {
+    that.emit('destroy', msg.id);
     delete that.containers[msg.id];
   });
 
@@ -40,6 +45,9 @@ function DockerTracker(docker) {
   });
 
 }
+
+util.inherits(DockerTracker, events.EventEmitter);
+
 
 module.exports = function (docker) {
   return new DockerTracker(docker);

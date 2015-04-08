@@ -31,15 +31,34 @@ describe('docker-tracker node module', function () {
   });
 
   describe('when there are no containers running', function(){
-    it('has not containers in the model', function() {
+    it('has no containers in the model', function() {
       assert.deepEqual(this.tracker.containers, []);
+    });
+
+    describe('when one container is added', function() {
+      it ('emits "create" event', function(done) {
+        this.tracker.once('create', function(containerId) {
+          assert(containerId);
+          done();
+        });
+        docker.createContainer({
+          Cmd: ['sleep', '500'],
+          Image: 'ubuntu',
+          OpenStdin: false,
+          Tty: false
+        }, function(err) {
+          if (err) {
+            throw err;
+          }
+        });
+      });
+
     });
   });
 
   describe('when there is one container running', function() {
 
     this.beforeEach(function(done) {
-
       docker.createContainer({
         Cmd: ['sleep', '500'],
         Image: 'ubuntu',
@@ -68,6 +87,40 @@ describe('docker-tracker node module', function () {
       assert.notEqual(firstValue.State, null);
     });
 
+
+    it ('emits "stop" event when container is stopped', function(done) {
+
+      var firstKey = Object.keys(this.tracker.containers)[0];
+      var firstValue = this.tracker.containers[firstKey];
+      var container = docker.getContainer(firstValue.Id);
+      container.stop(function(err) {
+        if (err) {
+          throw err;
+        }
+      });
+
+      this.tracker.once('stop', function(containerId) {
+        assert(containerId);
+        done();
+      });
+    });
+
+    it ('emits "destroy" event when container is removed', function(done) {
+
+      var firstKey = Object.keys(this.tracker.containers)[0];
+      var firstValue = this.tracker.containers[firstKey];
+      var container = docker.getContainer(firstValue.Id);
+      container.remove({force: true}, function(err) {
+        if (err) {
+          throw err;
+        }
+      });
+
+      this.tracker.once('destroy', function(containerId) {
+        assert(containerId);
+        done();
+      });
+    });
 
     describe('when container is stopped', function() {
 
